@@ -1,13 +1,3 @@
-import random
-import string
-from flask import Flask, jsonify, redirect, render_template_string, request, url_for
-
-app = Flask(__name__)
-
-# Almacenamiento temporal en memoria
-GRUPOS = {}
-
-HTML_INDEX = """
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -15,58 +5,147 @@ HTML_INDEX = """
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Parche Seguro — Cuidado entre Pares</title>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; background: #111318; color: #f3f4f6; margin: 0; padding: 24px; }
-    .container { max-width: 680px; margin: 0 auto; }
-    .card { background: #1b1f27; border: 1px solid #2d3340; border-radius: 14px; padding: 22px; margin-bottom: 20px; }
-    h1, h2 { margin-top: 0; }
-    label { display: block; font-size: 0.9rem; margin-top: 12px; color: #d1d5db; }
-    input, select { width: 100%; box-sizing: border-box; padding: 10px 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #374151; background: #111318; color: #fff; }
-    button { margin-top: 16px; padding: 11px 18px; border: none; border-radius: 8px; background: #10b981; color: #06281e; font-weight: 700; cursor: pointer; }
-    button:hover { background: #34d399; }
-    .error { background: #451a1a; border: 1px solid #ef4444; color: #fecaca; padding: 12px; border-radius: 8px; margin-bottom: 16px; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111318;
+      color: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.45;
+    }
+    .container { max-width: 980px; margin: 0 auto; }
+    .hidden { display: none !important; }
+    .card {
+      background: #1b1f27;
+      border: 1px solid #2d3340;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    h1, h2, h3 { margin-top: 0; }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      margin-top: 11px;
+      color: #d1d5db;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #111318;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    button, .btn-link {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #10b981;
+      color: #06281e;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    button:hover, .btn-link:hover { filter: brightness(1.08); }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-secondary { background: #374151; color: #f9fafb; }
+    .btn-small { margin-top: 0; padding: 8px 12px; font-size: 0.84rem; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #064e3b;
+      color: #6ee7b7;
+    }
+    .badge-warn { background: #78350f; color: #fde68a; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(265px, 1fr)); gap: 14px; }
+    .member-card {
+      background: #14171e;
+      border: 1px solid #2a303c;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .msg {
+      background: #064e3b;
+      border: 1px solid #10b981;
+      color: #d1fae5;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .error {
+      background: #451a1a;
+      border: 1px solid #ef4444;
+      color: #fecaca;
+      padding: 11px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    ul { padding-left: 18px; margin: 8px 0 0; }
+    li { margin-bottom: 6px; }
+    @media (max-width: 720px) {
+      .row, .grid-2 { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+  <!-- VISTA DE INICIO -->
+  <div id="vista-inicio" class="container">
     <h1>Parche Seguro</h1>
-    <p>Registra tu grupo, define quién está encargado de cuidar el parche y ten los datos críticos listos si algo pasa.</p>
+    <p style="color:#d1d5db;">
+      Campaña de cuidado entre pares: registra tu parche, designa quién queda encargado, comparte ubicación y ten a la mano datos clave y líneas de emergencia.
+    </p>
 
-    {% if error %}
-      <div class="error">{{ error }}</div>
-    {% endif %}
+    <div id="inicio-error" class="error hidden"></div>
 
     <div class="card">
-      <h2>Unirme a un parche existente</h2>
-      <form method="GET" action="/">
-        <label for="codigo">Código del grupo</label>
-        <input id="codigo" name="codigo" placeholder="Ej: A7X9K2" value="{{ codigo_buscado }}" required />
+      <h2>Entrar a un parche guardado en este dispositivo</h2>
+      <form id="form-buscar-grupo">
+        <label for="codigo-buscar">Código del grupo</label>
+        <input id="codigo-buscar" placeholder="Ej: A7X9K2" required />
         <button type="submit">Entrar al grupo</button>
       </form>
+      <div id="grupos-guardados" style="margin-top:14px;"></div>
     </div>
 
     <div class="card">
       <h2>Crear parche y designar encargado</h2>
-      <form method="POST" action="/">
-        <label for="nombre_parche">Nombre del parche o salida</label>
-        <input id="nombre_parche" name="nombre_parche" placeholder="Ej: Salida viernes / Cumpleaños" required />
+      <form id="form-crear-grupo">
+        <label for="nombre-parche">Nombre del parche o salida</label>
+        <input id="nombre-parche" placeholder="Ej: Salida del viernes / Cumpleaños" required />
 
         <div class="row">
           <div>
-            <label for="encargado_nombre">Persona encargada del grupo</label>
-            <input id="encargado_nombre" name="encargado_nombre" placeholder="Nombre completo" required />
+            <label for="encargado-nombre">Persona encargada del grupo</label>
+            <input id="encargado-nombre" placeholder="Nombre completo" required />
           </div>
           <div>
-            <label for="encargado_edad">Edad</label>
-            <input id="encargado_edad" name="encargado_edad" type="number" min="1" max="120" placeholder="Ej: 22" />
+            <label for="encargado-edad">Edad</label>
+            <input id="encargado-edad" type="number" min="1" max="120" placeholder="Ej: 22" />
           </div>
         </div>
 
         <div class="row">
           <div>
-            <label for="encargado_sangre">Tipo de sangre</label>
-            <select id="encargado_sangre" name="encargado_sangre">
+            <label for="encargado-sangre">Tipo de sangre</label>
+            <select id="encargado-sangre">
               <option value="">Seleccionar</option>
               <option value="O+">O+</option>
               <option value="O-">O-</option>
@@ -79,79 +158,45 @@ HTML_INDEX = """
             </select>
           </div>
           <div>
-            <label for="encargado_emergencia">Teléfono de emergencia</label>
-            <input id="encargado_emergencia" name="encargado_emergencia" placeholder="Ej: 3001234567" />
+            <label for="encargado-emergencia">Número de emergencia</label>
+            <input id="encargado-emergencia" placeholder="Ej: 3001234567" />
           </div>
         </div>
 
-        <label for="encargado_direccion">Dirección de residencia</label>
-        <input id="encargado_direccion" name="encargado_direccion" placeholder="Barrio, calle/carrera y número" />
+        <label for="encargado-direccion">Dirección de donde vive</label>
+        <input id="encargado-direccion" placeholder="Barrio, dirección o punto de referencia" />
 
         <button type="submit">Crear parche</button>
       </form>
     </div>
   </div>
-</body>
-</html>
-"""
 
-HTML_GRUPO = """
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ grupo.nombre_parche }} — Parche Seguro</title>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; background: #111318; color: #f3f4f6; margin: 0; padding: 20px; }
-    .container { max-width: 960px; margin: 0 auto; }
-    .card { background: #1b1f27; border: 1px solid #2d3340; border-radius: 14px; padding: 20px; margin-bottom: 18px; }
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: #064e3b; color: #6ee7b7; }
-    .badge-warn { background: #78350f; color: #fde68a; }
-    label { display: block; font-size: 0.88rem; margin-top: 10px; color: #d1d5db; }
-    input, select { width: 100%; box-sizing: border-box; padding: 9px 11px; margin-top: 4px; border-radius: 8px; border: 1px solid #374151; background: #111318; color: #fff; }
-    button, .btn-link { display: inline-block; margin-top: 12px; padding: 9px 14px; border: none; border-radius: 8px; background: #10b981; color: #06281e; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
-    .btn-danger { background: #ef4444; color: #fff; }
-    .btn-secondary { background: #374151; color: #f9fafb; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-    .member-card { background: #14171e; border: 1px solid #2a303c; border-radius: 12px; padding: 14px; }
-    .msg { background: #064e3b; border: 1px solid #10b981; color: #d1fae5; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; }
-    ul { padding-left: 18px; line-height: 1.5; }
-    @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
-  </style>
-</head>
-<body>
-  <div class="container">
+  <!-- VISTA DEL GRUPO -->
+  <div id="vista-grupo" class="container hidden">
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
-          <h1 style="margin:0;">{{ grupo.nombre_parche }}</h1>
-          <p style="margin:6px 0 0; color:#9ca3af;">
-            Código para invitar al parche: <strong>{{ grupo.codigo }}</strong> ·
-            Encargado actual: <strong>{{ grupo.encargado }}</strong>
-          </p>
+          <h1 id="grupo-titulo" style="margin:0;">Parche</h1>
+          <p id="grupo-meta" style="margin:6px 0 0; color:#9ca3af;"></p>
         </div>
-        <a class="btn-link btn-secondary" href="/">← Volver al inicio</a>
+        <button type="button" class="btn-secondary btn-small" onclick="volverInicio()">← Volver al inicio</button>
       </div>
     </div>
 
-    {% if mensaje %}
-      <div class="msg">{{ mensaje }}</div>
-    {% endif %}
+    <div id="grupo-mensaje" class="msg hidden"></div>
 
     <div class="grid-2">
       <div class="card">
-        <h2 style="margin-top:0;">Registrar integrante al parche</h2>
-        <form method="POST">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" name="nombre" required placeholder="Nombre de la persona" />
+        <h2>Registrar integrante al parche</h2>
+        <form id="form-agregar-miembro">
+          <label for="miembro-nombre">Nombre</label>
+          <input id="miembro-nombre" placeholder="Nombre de la persona" required />
 
-          <label for="edad">Edad</label>
-          <input id="edad" name="edad" type="number" min="1" max="120" placeholder="Ej: 21" />
+          <label for="miembro-edad">Edad</label>
+          <input id="miembro-edad" type="number" min="1" max="120" placeholder="Ej: 21" />
 
-          <label for="tipo_sangre">Tipo de sangre</label>
-          <select id="tipo_sangre" name="tipo_sangre">
+          <label for="miembro-sangre">Tipo de sangre</label>
+          <select id="miembro-sangre">
             <option value="">Seleccionar</option>
             <option value="O+">O+</option>
             <option value="O-">O-</option>
@@ -163,14 +208,14 @@ HTML_GRUPO = """
             <option value="AB-">AB-</option>
           </select>
 
-          <label for="direccion">Dirección de donde vive</label>
-          <input id="direccion" name="direccion" placeholder="Dirección exacta o referencia" />
+          <label for="miembro-direccion">Dirección de donde vive</label>
+          <input id="miembro-direccion" placeholder="Dirección exacta o referencia" />
 
-          <label for="contacto_emergencia">Número en caso de emergencia</label>
-          <input id="contacto_emergencia" name="contacto_emergencia" placeholder="Ej: 3109876543" />
+          <label for="miembro-emergencia">Número en caso de emergencia</label>
+          <input id="miembro-emergencia" placeholder="Ej: 3109876543" />
 
           <label style="display:flex; align-items:center; gap:8px; margin-top:14px;">
-            <input type="checkbox" name="designar_encargado" style="width:auto; margin:0;" />
+            <input id="miembro-encargado" type="checkbox" style="width:auto; margin:0;" />
             Designar a esta persona como encargada del grupo
           </label>
 
@@ -179,115 +224,192 @@ HTML_GRUPO = """
       </div>
 
       <div class="card">
-        <h2 style="margin-top:0;">Si alguien se pasa de tragos + Emergencias</h2>
-        <p style="color:#d1d5db; font-size:0.92rem;">Medidas prácticas de cuidado entre pares:</p>
+        <h2>Si alguien se pasa de tragos + Emergencias</h2>
+        <p style="color:#d1d5db; font-size:0.92rem;">Guía rápida de cuidado entre pares:</p>
         <ul>
-          <li><strong>No dejarlo solo:</strong> que el encargado o un compañero se quede con la persona.</li>
-          <li><strong>Hidratación y pausa:</strong> cortar el alcohol de inmediato, ofrecer agua despacio y llevarlo a un lugar ventilado.</li>
-          <li><strong>Posición segura:</strong> si está muy somnoliento o vomita, recostarlo de lado (posición lateral de seguridad); nunca boca arriba inconsciente.</li>
-          <li><strong>Señales de alarma:</strong> respiración muy lenta, no despierta ante estímulos, convulsiones o golpes en la cabeza.</li>
+          <li><strong>No dejarlo solo:</strong> que la persona encargada o alguien de confianza acompañe en todo momento.</li>
+          <li><strong>Pausa e hidratación:</strong> detener el consumo de alcohol, llevar a un lugar fresco/ventilado y dar agua despacio.</li>
+          <li><strong>Posición lateral de seguridad:</strong> si está muy somnoliento o vomita, recostarlo de lado; nunca boca arriba inconsciente.</li>
+          <li><strong>Cuándo pedir ayuda urgente:</strong> respiración muy lenta o irregular, no responde al llamarlo/sacudirlo, convulsiones o golpes fuertes.</li>
         </ul>
 
-        <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:10px;">
+        <div class="toolbar" style="margin-top:14px;">
           <a class="btn-link btn-danger" href="tel:123">Llamar al 123 (Emergencias)</a>
-          <a class="btn-link btn-secondary" href="https://www.google.com/maps/search/urgencias+hospital+cerca" target="_blank" rel="noopener">Buscar urgencias cercanas</a>
+          <a class="btn-link btn-secondary" href="https://www.google.com/maps/search/urgencias+hospital+cerca" target="_blank" rel="noopener">Urgencias cercanas</a>
         </div>
       </div>
     </div>
 
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <h2 style="margin:0;">Integrantes y ubicación del parche ({{ grupo.miembros|length }})</h2>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <select id="usuario_actual" style="width:auto; margin:0;">
-            {% for m in grupo.miembros %}
-              <option value="{{ m.nombre }}">{{ m.nombre }}</option>
-            {% endfor %}
-          </select>
-          <button type="button" onclick="compartirUbicacion()">Compartir mi ubicación</button>
-          <button type="button" class="btn-secondary" onclick="marcarEstado('Pasado de tragos / Necesita apoyo')">Marcar: necesita apoyo</button>
-          <button type="button" class="btn-secondary" onclick="marcarEstado('Bien / Activo')">Marcar: bien</button>
+        <h2 id="miembros-titulo" style="margin:0;">Integrantes del parche</h2>
+        <div class="toolbar">
+          <select id="usuario-actual" style="width:auto; margin:0;"></select>
+          <button type="button" class="btn-small" onclick="compartirUbicacion()">Compartir mi ubicación</button>
+          <button type="button" class="btn-secondary btn-small" onclick="marcarEstado('Pasado de tragos / Necesita apoyo')">Necesita apoyo</button>
+          <button type="button" class="btn-secondary btn-small" onclick="marcarEstado('Bien / Activo')">Marcar bien</button>
         </div>
       </div>
-      <p id="geo_status" style="color:#9ca3af; font-size:0.88rem; margin-top:8px;">
-        Nota: para usar GPS en el navegador, la página debe abrirse en <strong>localhost</strong> o <strong>HTTPS</strong>.
+      <p id="geo-status" style="color:#9ca3af; font-size:0.86rem; margin-top:8px;">
+        El GPS funciona en <strong>HTTPS</strong> (como GitHub Pages) o <strong>localhost</strong> cuando aceptas el permiso de ubicación.
       </p>
-
-      <div class="grid-3" style="margin-top:14px;">
-        {% for m in grupo.miembros %}
-          <div class="member-card">
-            <div style="display:flex; justify-content:space-between; align-items:start; gap:8px;">
-              <strong>{{ m.nombre }}</strong>
-              {% if m.es_encargado %}
-                <span class="badge">Encargado/a</span>
-              {% endif %}
-            </div>
-
-            <div style="margin-top:8px;">
-              {% if 'apoyo' in m.estado|lower or 'tragos' in m.estado|lower %}
-                <span class="badge badge-warn">{{ m.estado }}</span>
-              {% else %}
-                <span class="badge">{{ m.estado }}</span>
-              {% endif %}
-            </div>
-
-            <p style="font-size:0.88rem; color:#d1d5db; margin:10px 0 0;">
-              <strong>Edad:</strong> {{ m.edad }}<br />
-              <strong>Tipo de sangre:</strong> {{ m.tipo_sangre }}<br />
-              <strong>Dirección:</strong> {{ m.direccion }}<br />
-              <strong>Emergencia:</strong>
-              {% if m.contacto_emergencia != 'No indicado' %}
-                <a href="tel:{{ m.contacto_emergencia }}" style="color:#6ee7b7;">{{ m.contacto_emergencia }}</a>
-              {% else %}
-                No indicado
-              {% endif %}
-            </p>
-
-            <p style="font-size:0.85rem; color:#9ca3af; margin:10px 0 0;">
-              {% if m.lat and m.lng %}
-                Ubicación: {{ "%.5f"|format(m.lat) }}, {{ "%.5f"|format(m.lng) }}<br />
-                <a href="https://www.google.com/maps?q={{ m.lat }},{{ m.lng }}" target="_blank" rel="noopener" style="color:#93c5fd;">Ver en Google Maps</a>
-              {% else %}
-                Ubicación aún no compartida
-              {% endif %}
-            </p>
-          </div>
-        {% endfor %}
-      </div>
+      <div id="lista-miembros" class="grid-3" style="margin-top:14px;"></div>
     </div>
   </div>
 
   <script>
-    const CODIGO_GRUPO = "{{ grupo.codigo }}";
+    const STORAGE_KEY = "parche_seguro_grupos_v1";
+    let grupoActivoCodigo = null;
+
+    function leerGrupos() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function guardarGrupos(grupos) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(grupos));
+    }
+
+    function generarCodigo(grupos) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      while (true) {
+        let code = "";
+        for (let i = 0; i < 6; i++) {
+          code += chars[Math.floor(Math.random() * chars.length)];
+        }
+        if (!grupos[code]) return code;
+      }
+    }
+
+    function mostrarErrorInicio(texto) {
+      const el = document.getElementById("inicio-error");
+      el.textContent = texto;
+      el.classList.remove("hidden");
+    }
+
+    function ocultarErrorInicio() {
+      document.getElementById("inicio-error").classList.add("hidden");
+    }
+
+    function mostrarMensajeGrupo(texto) {
+      const el = document.getElementById("grupo-mensaje");
+      el.textContent = texto;
+      el.classList.remove("hidden");
+    }
+
+    function renderGruposGuardados() {
+      const grupos = leerGrupos();
+      const codigos = Object.keys(grupos);
+      const cont = document.getElementById("grupos-guardados");
+      if (!codigos.length) {
+        cont.innerHTML = "";
+        return;
+      }
+      cont.innerHTML = `<p style="color:#9ca3af; font-size:0.88rem; margin:0 0 8px;">Parches creados en este navegador:</p>` +
+        codigos.map(c =>
+          `<button type="button" class="btn-secondary btn-small" style="margin-right:6px; margin-bottom:6px;" onclick="abrirGrupo('${c}')">${grupos[c].nombreParche} (${c})</button>`
+        ).join("");
+    }
+
+    function abrirGrupo(codigo) {
+      const limpio = String(codigo || "").trim().toUpperCase();
+      const grupos = leerGrupos();
+      if (!grupos[limpio]) {
+        mostrarErrorInicio(`No se encontró ningún parche con el código "${limpio}".`);
+        return;
+      }
+      ocultarErrorInicio();
+      grupoActivoCodigo = limpio;
+      document.getElementById("vista-inicio").classList.add("hidden");
+      document.getElementById("vista-grupo").classList.remove("hidden");
+      document.getElementById("grupo-mensaje").classList.add("hidden");
+      renderGrupo();
+    }
+
+    function volverInicio() {
+      grupoActivoCodigo = null;
+      document.getElementById("vista-grupo").classList.add("hidden");
+      document.getElementById("vista-inicio").classList.remove("hidden");
+      renderGruposGuardados();
+    }
+
+    function renderGrupo() {
+      const grupos = leerGrupos();
+      const grupo = grupos[grupoActivoCodigo];
+      if (!grupo) return volverInicio();
+
+      document.getElementById("grupo-titulo").textContent = grupo.nombreParche;
+      document.getElementById("grupo-meta").innerHTML =
+        `Código del parche: <strong>${grupo.codigo}</strong> · Encargado/a actual: <strong>${escapeHtml(grupo.encargado)}</strong>`;
+      document.getElementById("miembros-titulo").textContent =
+        `Integrantes y ubicación del parche (${grupo.miembros.length})`;
+
+      const selectUsuario = document.getElementById("usuario-actual");
+      const seleccionPrevia = selectUsuario.value;
+      selectUsuario.innerHTML = grupo.miembros
+        .map(m => `<option value="${escapeAttr(m.nombre)}">${escapeHtml(m.nombre)}</option>`)
+        .join("");
+      if (seleccionPrevia && grupo.miembros.some(m => m.nombre === seleccionPrevia)) {
+        selectUsuario.value = seleccionPrevia;
+      }
+
+      const lista = document.getElementById("lista-miembros");
+      lista.innerHTML = grupo.miembros.map(m => {
+        const necesitaApoyo = /apoyo|tragos/i.test(m.estado || "");
+        const badgeEstado = necesitaApoyo
+          ? `<span class="badge badge-warn">${escapeHtml(m.estado)}</span>`
+          : `<span class="badge">${escapeHtml(m.estado)}</span>`;
+
+        const telHtml = m.contactoEmergencia && m.contactoEmergencia !== "No indicado"
+          ? `<a href="tel:${escapeAttr(m.contactoEmergencia)}" style="color:#6ee7b7;">${escapeHtml(m.contactoEmergencia)}</a>`
+          : "No indicado";
+
+        const ubicacionHtml = (typeof m.lat === "number" && typeof m.lng === "number")
+          ? `Ubicación: ${m.lat.toFixed(5)}, ${m.lng.toFixed(5)}<br /><a href="https://www.google.com/maps?q=${m.lat},${m.lng}" target="_blank" rel="noopener" style="color:#93c5fd;">Ver en Google Maps</a>`
+          : "Ubicación aún no compartida";
+
+        return `
+          <div class="member-card">
+            <div style="display:flex; justify-content:space-between; align-items:start; gap:8px;">
+              <strong>${escapeHtml(m.nombre)}</strong>
+              ${m.esEncargado ? `<span class="badge">Encargado/a</span>` : ""}
+            </div>
+            <div style="margin-top:8px;">${badgeEstado}</div>
+            <p style="font-size:0.88rem; color:#d1d5db; margin:10px 0 0;">
+              <strong>Edad:</strong> ${escapeHtml(m.edad)}<br />
+              <strong>Tipo de sangre:</strong> ${escapeHtml(m.tipoSangre)}<br />
+              <strong>Dirección:</strong> ${escapeHtml(m.direccion)}<br />
+              <strong>Emergencia:</strong> ${telHtml}
+            </p>
+            <p style="font-size:0.84rem; color:#9ca3af; margin:10px 0 0;">${ubicacionHtml}</p>
+          </div>
+        `;
+      }).join("");
+    }
 
     function compartirUbicacion() {
-      const nombre = document.getElementById("usuario_actual").value;
-      const statusEl = document.getElementById("geo_status");
-
+      const nombre = document.getElementById("usuario-actual").value;
+      const statusEl = document.getElementById("geo-status");
       if (!navigator.geolocation) {
         statusEl.textContent = "Este navegador no soporta geolocalización.";
         return;
       }
-
       statusEl.textContent = "Obteniendo tu ubicación...";
       navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const res = await fetch("/api/ubicacion", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              codigo: CODIGO_GRUPO,
-              nombre: nombre,
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude
-            })
-          });
-          const data = await res.json();
-          if (data.ok) {
-            statusEl.textContent = data.mensaje + " — recargando vista...";
-            window.location.reload();
-          } else {
-            statusEl.textContent = data.error || "No se pudo actualizar la ubicación.";
+        (pos) => {
+          const grupos = leerGrupos();
+          const grupo = grupos[grupoActivoCodigo];
+          if (!grupo) return;
+          const miembro = grupo.miembros.find(m => m.nombre === nombre);
+          if (miembro) {
+            miembro.lat = pos.coords.latitude;
+            miembro.lng = pos.coords.longitude;
+            guardarGrupos(grupos);
+            statusEl.textContent = `Ubicación actualizada para ${nombre}.`;
+            renderGrupo();
           }
         },
         (err) => {
@@ -297,160 +419,104 @@ HTML_GRUPO = """
       );
     }
 
-    async function marcarEstado(estado) {
-      const nombre = document.getElementById("usuario_actual").value;
-      const res = await fetch("/api/estado", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          codigo: CODIGO_GRUPO,
-          nombre: nombre,
-          estado: estado
-        })
-      });
-      const data = await res.json();
-      if (data.ok) {
-        window.location.reload();
+    function marcarEstado(nuevoEstado) {
+      const nombre = document.getElementById("usuario-actual").value;
+      const grupos = leerGrupos();
+      const grupo = grupos[grupoActivoCodigo];
+      if (!grupo) return;
+      const miembro = grupo.miembros.find(m => m.nombre === nombre);
+      if (miembro) {
+        miembro.estado = nuevoEstado;
+        guardarGrupos(grupos);
+        mostrarMensajeGrupo(`Estado de ${nombre} actualizado a "${nuevoEstado}".`);
+        renderGrupo();
       }
     }
+
+    document.getElementById("form-buscar-grupo").addEventListener("submit", (e) => {
+      e.preventDefault();
+      abrirGrupo(document.getElementById("codigo-buscar").value);
+    });
+
+    document.getElementById("form-crear-grupo").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nombreParche = document.getElementById("nombre-parche").value.trim();
+      const encargadoNombre = document.getElementById("encargado-nombre").value.trim();
+      if (!nombreParche || !encargadoNombre) return;
+
+      const grupos = leerGrupos();
+      const codigo = generarCodigo(grupos);
+
+      grupos[codigo] = {
+        codigo,
+        nombreParche,
+        encargado: encargadoNombre,
+        miembros: [
+          {
+            nombre: encargadoNombre,
+            edad: document.getElementById("encargado-edad").value.trim() || "No indicada",
+            tipoSangre: document.getElementById("encargado-sangre").value || "N/R",
+            direccion: document.getElementById("encargado-direccion").value.trim() || "No indicada",
+            contactoEmergencia: document.getElementById("encargado-emergencia").value.trim() || "No indicado",
+            esEncargado: true,
+            estado: "Bien / Activo",
+            lat: null,
+            lng: null
+          }
+        ]
+      };
+
+      guardarGrupos(grupos);
+      e.target.reset();
+      abrirGrupo(codigo);
+    });
+
+    document.getElementById("form-agregar-miembro").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("miembro-nombre").value.trim();
+      if (!nombre) return;
+
+      const grupos = leerGrupos();
+      const grupo = grupos[grupoActivoCodigo];
+      if (!grupo) return;
+
+      const designarEncargado = document.getElementById("miembro-encargado").checked;
+      if (designarEncargado) {
+        grupo.miembros.forEach(m => { m.esEncargado = false; });
+        grupo.encargado = nombre;
+      }
+
+      grupo.miembros.push({
+        nombre,
+        edad: document.getElementById("miembro-edad").value.trim() || "No indicada",
+        tipoSangre: document.getElementById("miembro-sangre").value || "N/R",
+        direccion: document.getElementById("miembro-direccion").value.trim() || "No indicada",
+        contactoEmergencia: document.getElementById("miembro-emergencia").value.trim() || "No indicado",
+        esEncargado: designarEncargado,
+        estado: "Bien / Activo",
+        lat: null,
+        lng: null
+      });
+
+      guardarGrupos(grupos);
+      e.target.reset();
+      mostrarMensajeGrupo(`${nombre} se sumó al parche.`);
+      renderGrupo();
+    });
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str).replace(/'/g, "&#39;");
+    }
+
+    renderGruposGuardados();
   </script>
 </body>
 </html>
-"""
-
-
-def generar_codigo_grupo(longitud=6):
-    chars = string.ascii_uppercase + string.digits
-    while True:
-        codigo = "".join(random.choices(chars, k=longitud))
-        if codigo not in GRUPOS:
-            return codigo
-
-
-@app.route("/", methods=["GET", "POST"])
-def index():
-    codigo_buscado = request.args.get("codigo", "").strip().upper()
-    error = None
-
-    if codigo_buscado:
-        if codigo_buscado in GRUPOS:
-            return redirect(url_for("ver_grupo", codigo=codigo_buscado))
-        error = f"No encontramos un parche con el código '{codigo_buscado}'."
-
-    if request.method == "POST":
-        nombre_parche = request.form.get("nombre_parche", "").strip()
-        encargado_nombre = request.form.get("encargado_nombre", "").strip()
-        encargado_edad = request.form.get("encargado_edad", "").strip()
-        encargado_sangre = request.form.get("encargado_sangre", "").strip().upper()
-        encargado_direccion = request.form.get("encargado_direccion", "").strip()
-        encargado_emergencia = request.form.get("encargado_emergencia", "").strip()
-
-        if not nombre_parche or not encargado_nombre:
-            error = "Debes ingresar el nombre del parche y el nombre de la persona encargada."
-        else:
-            codigo = generar_codigo_grupo()
-            GRUPOS[codigo] = {
-                "codigo": codigo,
-                "nombre_parche": nombre_parche,
-                "encargado": encargado_nombre,
-                "miembros": [
-                    {
-                        "nombre": encargado_nombre,
-                        "edad": encargado_edad or "No indicada",
-                        "tipo_sangre": encargado_sangre or "N/R",
-                        "direccion": encargado_direccion or "No indicada",
-                        "contacto_emergencia": encargado_emergencia or "No indicado",
-                        "es_encargado": True,
-                        "estado": "Bien / Activo",
-                        "lat": None,
-                        "lng": None,
-                    }
-                ],
-            }
-            return redirect(url_for("ver_grupo", codigo=codigo))
-
-    return render_template_string(HTML_INDEX, error=error, codigo_buscado=codigo_buscado)
-
-
-@app.route("/grupo/<codigo>", methods=["GET", "POST"])
-def ver_grupo(codigo):
-    codigo = codigo.upper()
-    grupo = GRUPOS.get(codigo)
-    if not grupo:
-        return redirect(url_for("index", codigo=codigo))
-
-    mensaje = None
-    if request.method == "POST":
-        nombre = request.form.get("nombre", "").strip()
-        edad = request.form.get("edad", "").strip()
-        tipo_sangre = request.form.get("tipo_sangre", "").strip().upper()
-        direccion = request.form.get("direccion", "").strip()
-        contacto_emergencia = request.form.get("contacto_emergencia", "").strip()
-        designar_encargado = request.form.get("designar_encargado") == "on"
-
-        if nombre:
-            if designar_encargado:
-                for m in grupo["miembros"]:
-                    m["es_encargado"] = False
-                grupo["encargado"] = nombre
-
-            grupo["miembros"].append(
-                {
-                    "nombre": nombre,
-                    "edad": edad or "No indicada",
-                    "tipo_sangre": tipo_sangre or "N/R",
-                    "direccion": direccion or "No indicada",
-                    "contacto_emergencia": contacto_emergencia or "No indicado",
-                    "es_encargado": designar_encargado,
-                    "estado": "Bien / Activo",
-                    "lat": None,
-                    "lng": None,
-                }
-            )
-            mensaje = f"{nombre} se ha sumado al parche."
-
-    return render_template_string(HTML_GRUPO, grupo=grupo, mensaje=mensaje)
-
-
-@app.route("/api/ubicacion", methods=["POST"])
-def actualizar_ubicacion():
-    data = request.get_json(silent=True) or {}
-    codigo = str(data.get("codigo", "")).strip().upper()
-    nombre = str(data.get("nombre", "")).strip()
-    lat = data.get("lat")
-    lng = data.get("lng")
-
-    grupo = GRUPOS.get(codigo)
-    if not grupo:
-        return jsonify({"ok": False, "error": "Grupo no encontrado"}), 404
-
-    for miembro in grupo["miembros"]:
-        if miembro["nombre"].lower() == nombre.lower():
-            miembro["lat"] = lat
-            miembro["lng"] = lng
-            return jsonify({"ok": True, "mensaje": f"Ubicación actualizada para {miembro['nombre']}"})
-
-    return jsonify({"ok": False, "error": "Miembro no encontrado en el grupo"}), 404
-
-
-@app.route("/api/estado", methods=["POST"])
-def actualizar_estado():
-    data = request.get_json(silent=True) or {}
-    codigo = str(data.get("codigo", "")).strip().upper()
-    nombre = str(data.get("nombre", "")).strip()
-    estado = str(data.get("estado", "Bien / Activo")).strip()
-
-    grupo = GRUPOS.get(codigo)
-    if not grupo:
-        return jsonify({"ok": False, "error": "Grupo no encontrado"}), 404
-
-    for miembro in grupo["miembros"]:
-        if miembro["nombre"].lower() == nombre.lower():
-            miembro["estado"] = estado
-            return jsonify({"ok": True})
-
-    return jsonify({"ok": False, "error": "Miembro no encontrado"}), 404
-
-
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
