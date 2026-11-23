@@ -8,16 +8,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Figtree:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#071336;--ink2:#0b2a66;--card:rgba(255,255,255,.08);--line:rgba(255,255,255,.16);--txt:#f4f8ff;--mut:#a9bbe0;--lime:#35e85a;--cyan:#00c2ff;--coral:#ff4d6a;--amber:#ffc14d;--grad:linear-gradient(120deg,#35e85a,#00c2ff);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{--ink:#071336;--card:rgba(255,255,255,.08);--line:rgba(255,255,255,.16);--txt:#f4f8ff;--mut:#a9bbe0;--lime:#35e85a;--cyan:#00c2ff;--coral:#ff4d6a;--amber:#ffc14d;--grad:linear-gradient(120deg,#35e85a,#00c2ff);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;font-family:Figtree,system-ui,sans-serif;color:var(--txt);background:radial-gradient(120% 60% at 50% -10%,#0d4fb0 0%,transparent 60%),radial-gradient(70% 40% at 100% 100%,rgba(53,232,90,.22),transparent 70%),var(--ink);background-attachment:fixed;padding:18px 16px 60px;overflow-x:hidden}
 .app{max-width:480px;margin:0 auto}
 .hidden{display:none!important}
-h1,h2,.u{font-family:Unbounded,Figtree,sans-serif}
+h1,h2{font-family:Unbounded,Figtree,sans-serif}
 button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
-/* HOME */
 .stage{position:relative;height:290px;display:grid;place-items:center;margin-top:6px}
 .ring{position:absolute;width:190px;height:190px;border-radius:50%;border:2px solid var(--cyan);opacity:0;animation:rg 3.6s ease-out infinite}
 .ring:nth-child(2){animation-delay:1.2s;border-color:var(--lime)}
@@ -28,17 +26,17 @@ button,input,select{font:inherit;color:inherit}
 .slogan{font-size:2.15rem;line-height:1.08;font-weight:800;text-align:center;margin:8px 0 10px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .lead{text-align:center;color:var(--mut);margin:0 0 20px;font-weight:500}
 .card{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:18px;backdrop-filter:blur(10px);margin-bottom:14px}
-input{width:100%;padding:16px 16px;margin-bottom:10px;border-radius:16px;border:1.5px solid var(--line);background:rgba(7,19,54,.7);font-size:1.02rem;font-weight:600}
+input{width:100%;padding:16px;margin-bottom:10px;border-radius:16px;border:1.5px solid var(--line);background:rgba(7,19,54,.7);font-size:1.02rem;font-weight:600}
 input::placeholder{color:#7f93bf;font-weight:500}
 input:focus{border-color:var(--lime);outline:none;box-shadow:0 0 0 4px rgba(53,232,90,.18)}
 .cta{width:100%;border:0;border-radius:18px;padding:17px;font-family:Unbounded,sans-serif;font-weight:800;font-size:1rem;color:#05153a;background:var(--grad);box-shadow:0 10px 30px rgba(0,194,255,.35);cursor:pointer}
 .cta:active{transform:scale(.98)}
 .alt{text-align:center;margin-top:14px;color:var(--mut);font-size:.92rem}
 .link{background:none;border:0;color:var(--cyan);font-weight:800;cursor:pointer;text-decoration:underline;padding:4px}
-.err{background:rgba(255,77,106,.18);border:1px solid var(--coral);color:#ffd0d8;border-radius:14px;padding:11px 14px;margin-bottom:12px;font-weight:700;font-size:.9rem}
+.err{background:rgba(255,77,106,.2);border:1px solid var(--coral);color:#ffe0e6;border-radius:14px;padding:11px 14px;margin-bottom:12px;font-weight:700;font-size:.9rem}
+.err a{color:#fff;font-weight:800;margin-left:8px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .chip{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:999px;padding:9px 13px;font-weight:700;font-size:.84rem;cursor:pointer}
-/* GRUPO */
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 .top h2{margin:0;font-size:1.15rem;line-height:1.2}
 .mini{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
@@ -46,11 +44,11 @@ input:focus{border-color:var(--lime);outline:none;box-shadow:0 0 0 4px rgba(53,2
 .wa{background:#25d366;border-color:transparent;color:#04230f}
 .shield{display:flex;gap:14px;align-items:center}
 .shield svg{width:72px;height:86px;flex-shrink:0;filter:drop-shadow(0 6px 18px rgba(0,194,255,.45))}
-.shield b{font-family:Unbounded,sans-serif;font-size:1.5rem;display:block;line-height:1.1}
+.shield b{font-family:Unbounded,sans-serif;font-size:1.3rem;display:block;line-height:1.15}
 .shield span{color:var(--mut);font-size:.88rem;font-weight:500}
 .big{position:relative;display:grid;place-items:center;height:250px}
-.pulse{position:relative;width:170px;height:170px;border-radius:50%;border:0;cursor:pointer;background:var(--grad);color:#05153a;font-family:Unbounded,sans-serif;font-weight:800;font-size:.95rem;line-height:1.2;box-shadow:0 0 0 10px rgba(0,194,255,.14),0 18px 50px rgba(53,232,90,.4);z-index:2;padding:10px}
-.pulse small{display:block;font-family:Figtree,sans-serif;font-weight:700;font-size:.74rem;margin-top:4px;opacity:.75}
+.pulse{position:relative;width:170px;height:170px;border-radius:50%;border:0;cursor:pointer;background:var(--grad);color:#05153a;font-family:Unbounded,sans-serif;font-weight:800;font-size:1rem;line-height:1.2;box-shadow:0 0 0 10px rgba(0,194,255,.14),0 18px 50px rgba(53,232,90,.4);z-index:2;padding:10px}
+.pulse small{display:block;font-family:Figtree,sans-serif;font-weight:700;font-size:.74rem;margin-top:5px;opacity:.75}
 .pulse:active{transform:scale(.96)}
 .big .ring{width:170px;height:170px;animation-duration:3s}
 .big.ping .ring{animation-duration:.9s;opacity:1}
@@ -60,19 +58,23 @@ input:focus{border-color:var(--lime);outline:none;box-shadow:0 0 0 4px rgba(53,2
 .btn.sos{background:var(--coral);border-color:transparent;color:#fff}
 .m{display:flex;gap:12px;align-items:center;padding:12px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--line);margin-bottom:9px}
 .m.bad{border-color:var(--coral);background:rgba(255,77,106,.14)}
-.m.lost{border-color:var(--amber);background:rgba(255,193,77,.1)}
+.m.good{border-color:var(--lime);background:rgba(53,232,90,.1)}
 .av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:Unbounded,sans-serif;font-weight:800;color:#05153a;background:var(--grad);flex-shrink:0}
 .m .i{flex:1;min-width:0}
 .m .i b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .m .i span{font-size:.8rem;color:var(--mut);font-weight:600}
-.m .ic{display:flex;gap:6px}
+.ic{display:flex;gap:6px}
 .ic a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);text-decoration:none;font-size:1.05rem}
 details{margin-bottom:14px}
 summary{cursor:pointer;font-weight:800;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:18px;list-style:none}
 summary::-webkit-details-marker{display:none}
 details[open] summary{border-radius:18px 18px 0 0}
 .dbody{padding:14px 16px;border:1px solid var(--line);border-top:0;border-radius:0 0 18px 18px;background:rgba(255,255,255,.04)}
-.tips{display:grid;gap:9px;font-size:.92rem;line-height:1.4}
+.tl{border-left:4px solid;border-radius:0 14px 14px 0;background:rgba(255,255,255,.05);padding:11px 13px;margin-bottom:12px;font-size:.9rem;line-height:1.4}
+.tl h3{margin:0 0 7px;font-size:.98rem}
+.tl ul{margin:0;padding-left:18px;display:grid;gap:5px}
+.tl p{margin:8px 0 0}
+.tg{border-color:var(--lime)}.ty{border-color:var(--amber)}.tr{border-color:var(--coral)}
 .chk{display:flex;gap:9px;align-items:center;color:var(--mut);font-size:.88rem;margin:2px 0 12px}
 .chk input{width:18px;height:18px;margin:0;accent-color:var(--lime)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#fff;color:#05153a;font-weight:800;padding:12px 18px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:9;max-width:92vw;text-align:center}
@@ -119,18 +121,20 @@ select{background:rgba(7,19,54,.8);border:1px solid var(--line);border-radius:12
     <button class="pill" type="button" id="b-exit">Salir</button>
   </div>
 
+  <div id="alerts"></div>
+
   <div class="card shield">
     <svg viewBox="0 0 100 120" aria-hidden="true">
       <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#35e85a"/><stop offset="1" stop-color="#00c2ff"/></linearGradient>
       <clipPath id="sc"><rect id="sr" x="0" y="120" width="100" height="0"/></clipPath></defs>
-      <path id="sp" d="M50 6 L92 22 V58 C92 88 70 108 50 116 C30 108 8 88 8 58 V22 Z" fill="url(#gg)" clip-path="url(#sc)"/>
+      <path d="M50 6 L92 22 V58 C92 88 70 108 50 116 C30 108 8 88 8 58 V22 Z" fill="url(#gg)" clip-path="url(#sc)"/>
       <path d="M50 6 L92 22 V58 C92 88 70 108 50 116 C30 108 8 88 8 58 V22 Z" fill="none" stroke="url(#gg)" stroke-width="5" stroke-linejoin="round"/>
     </svg>
-    <div><b id="s-n">0 de 0</b><span id="s-t">en frecuencia</span></div>
+    <div><b id="s-n">0 de 0</b><span id="s-t"></span></div>
   </div>
 
   <div id="big" class="big"><i class="ring"></i><i class="ring"></i><i class="ring"></i>
-    <button id="b-ping" class="pulse" type="button">Estoy en frecuencia<small id="p-sub">toca cada 30 min</small></button>
+    <button id="b-ping" class="pulse" type="button"><span id="p-t">Llegué a casa</span><small id="p-sub">avísale al parche</small></button>
   </div>
 
   <div class="row">
@@ -152,94 +156,4 @@ select{background:rgba(7,19,54,.8);border:1px solid var(--line);border-radius:12
   </div>
 
   <details>
-    <summary>＋ Sumar a alguien del parche</summary>
-    <form id="f-add" class="dbody">
-      <input id="a-n" placeholder="Apodo" maxlength="20" autocomplete="off" required>
-      <input id="a-t" type="tel" placeholder="Su celular de emergencia" autocomplete="off" required>
-      <label class="chk"><input id="a-l" type="checkbox"> Que sea el encargado del parche</label>
-      <button class="cta">Agregar</button>
-    </form>
-  </details>
-
-  <details>
-    <summary>Si alguien se pasa de tragos</summary>
-    <div class="dbody tips">
-      <div><b>No lo dejen solo.</b> Ni en el baño, ni afuera, ni en un carro con desconocidos.</div>
-      <div><b>Agua y aire.</b> Frenen los tragos y sáquenlo a un sitio ventilado.</div>
-      <div><b>Si vomita o se duerme,</b> acuéstenlo de lado, nunca boca arriba.</div>
-      <div><b>Si no reacciona,</b> respira muy lento o se golpeó la cabeza: llamen al 123 ya.</div>
-    </div>
-  </details>
-</section>
-</main>
-<div id="toast" class="toast hidden" role="status"></div>
-
-<script>
-var KEY="frecuencia_par_v2",MIN=30*60000,mem={},cur=null,tt;
-var NAMES=["Los Imparables","Noche Par","Los de Siempre","Parche Fantasma","Equipo Sin Resaca","Los Intocables","La Banda del Viernes","Cero Abandono"];
-function $(i){return document.getElementById(i)}
-function db(){try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}return mem}
-function save(d){mem=d;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
-function rnd(a){return a[Math.floor(Math.random()*a.length)]}
-function mkcode(d){var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",k;do{k="FP";for(var i=0;i<3;i++)k+=c[Math.floor(Math.random()*c.length)]}while(d[k]);return k}
-function toast(t){var e=$("toast");e.textContent=t;e.classList.remove("hidden");clearTimeout(tt);tt=setTimeout(function(){e.classList.add("hidden")},2400)}
-function ago(ts){var m=Math.floor((Date.now()-ts)/60000);return m<1?"ahora mismo":m<60?"hace "+m+" min":"hace "+Math.floor(m/60)+" h"}
-function state(m){return m.st==="help"?"help":(Date.now()-m.ck>MIN?"lost":"ok")}
-
-function tab(crear){$("f-crear").classList.toggle("hidden",!crear);$("f-entrar").classList.toggle("hidden",crear);$("herr").classList.add("hidden");if(!crear)recent()}
-$("b-code").onclick=function(){tab(false)};$("b-new").onclick=function(){tab(true)};
-function recent(){var d=db(),k=Object.keys(d);$("recent").innerHTML=k.length?'<div class="chips">'+k.map(function(c){return '<button type="button" class="chip" data-c="'+c+'">'+esc(d[c].nom)+' · '+c+'</button>'}).join("")+'</div>':""}
-$("recent").onclick=function(e){var c=e.target.getAttribute("data-c");if(c)openG(c)};
-
-function openG(code){
-  code=String(code||"").trim().toUpperCase();var d=db();
-  if(!d[code]){var e=$("herr");e.textContent="No encontramos el código “"+code+"”. Revisa las letras o crea un parche nuevo.";e.classList.remove("hidden");return}
-  cur=code;$("home").classList.add("hidden");$("group").classList.remove("hidden");draw();window.scrollTo(0,0)}
-function exit(){cur=null;$("group").classList.add("hidden");$("home").classList.remove("hidden");tab(true)}
-$("b-exit").onclick=exit;
-
-$("f-crear").onsubmit=function(e){e.preventDefault();var d=db(),c=mkcode(d),n=$("nom").value.trim();
-  d[c]={c:c,nom:rnd(NAMES),yo:n,m:[{n:n,t:$("tel").value.trim(),lead:true,st:"ok",ck:Date.now()}]};save(d);e.target.reset();openG(c)};
-$("f-entrar").onsubmit=function(e){e.preventDefault();openG($("cod").value)};
-
-function me(g){return g.m.filter(function(m){return m.n===g.yo})[0]||g.m[0]}
-
-function draw(){
-  var d=db(),g=d[cur];if(!g)return exit();
-  $("g-nom").textContent=g.nom;$("g-cod").textContent=g.c;
-  $("g-wa").href="https://wa.me/?text="+encodeURIComponent("Entra a mi parche en Frecuencia Par 🛡️ Código: "+g.c+"\nTu parche, tu escudo. "+location.href.split("#")[0]);
-  var ok=g.m.filter(function(m){return state(m)==="ok"}).length,p=g.m.length?ok/g.m.length:0;
-  $("s-n").textContent=ok+" de "+g.m.length;
-  $("s-t").textContent=ok===g.m.length?"Escudo completo. Todos en frecuencia.":"en frecuencia. Revisen quién falta.";
-  $("sr").setAttribute("y",120-120*p);$("sr").setAttribute("height",120*p);
-  $("g-count").textContent="El parche ("+g.m.length+")";
-  var sel=$("yo");sel.innerHTML=g.m.map(function(m){return '<option'+(m.n===g.yo?' selected':'')+'>'+esc(m.n)+'</option>'}).join("");
-  $("who").classList.toggle("hidden",g.m.length<2);
-  $("list").innerHTML=g.m.map(function(m){
-    var s=state(m),lab=s==="help"?"Necesita apoyo":s==="lost"?"Sin señal":"En frecuencia";
-    var gps=typeof m.lat==="number"?'<a href="https://www.google.com/maps?q='+m.lat+','+m.lng+'" target="_blank" rel="noopener" aria-label="Ver ubicación de '+esc(m.n)+'">📍</a>':"";
-    return '<div class="m '+(s==="help"?"bad":s==="lost"?"lost":"")+'"><div class="av">'+esc(m.n.charAt(0).toUpperCase())+'</div><div class="i"><b>'+esc(m.n)+(m.lead?" 🛡️":"")+'</b><span>'+lab+' · '+ago(m.ck)+'</span></div><div class="ic">'+gps+'<a href="tel:'+esc(m.t)+'" aria-label="Llamar a '+esc(m.n)+'">📞</a></div></div>'}).join("");
-}
-$("yo").onchange=function(){var d=db();d[cur].yo=this.value;save(d);draw()};
-$("g-cod").onclick=function(){try{navigator.clipboard.writeText(cur)}catch(e){}toast("Código "+cur+" copiado")};
-$("g-dice").onclick=function(){var d=db();d[cur].nom=rnd(NAMES);save(d);draw()};
-
-function setSt(st,msg){var d=db(),g=d[cur],p=me(g);p.st=st;p.ck=Date.now();save(d);draw();toast(msg)}
-$("b-ping").onclick=function(){var b=$("big");b.classList.add("ping");setTimeout(function(){b.classList.remove("ping")},900);setSt("ok","✓ Señal enviada. Sigues en el escudo.")};
-$("b-help").onclick=function(){setSt("help","Avisamos al parche que necesitas apoyo")};
-$("b-gps").onclick=function(){
-  var i=$("gps-i");if(!navigator.geolocation){i.textContent="Tu navegador no permite compartir ubicación.";return}
-  i.textContent="Buscando señal GPS…";
-  navigator.geolocation.getCurrentPosition(function(pos){var d=db(),p=me(d[cur]);p.lat=pos.coords.latitude;p.lng=pos.coords.longitude;p.ck=Date.now();if(p.st!=="help")p.st="ok";save(d);i.textContent="Ubicación enviada.";draw()},
-  function(er){i.textContent="No se pudo activar el GPS: "+er.message},{enableHighAccuracy:true,timeout:10000})};
-
-$("f-add").onsubmit=function(e){e.preventDefault();var d=db(),g=d[cur],n=$("a-n").value.trim(),l=$("a-l").checked;
-  if(l){g.m.forEach(function(m){m.lead=false})}
-  g.m.push({n:n,t:$("a-t").value.trim(),lead:l,st:"ok",ck:Date.now()});save(d);e.target.reset();draw();toast(n+" entró al parche")};
-
-setInterval(function(){if(cur)draw()},30000);
-recent();
-</script>
-</body>
-</html>
+    <summary>＋ Sumar a alguien del
