@@ -156,4 +156,135 @@ select{background:rgba(7,19,54,.8);border:1px solid var(--line);border-radius:12
   </div>
 
   <details>
-    <summary>＋ Sumar a alguien del
+    <summary>＋ Sumar a alguien del parche</summary>
+    <form id="f-add" class="dbody">
+      <input id="a-n" placeholder="Apodo" maxlength="20" autocomplete="off" required>
+      <input id="a-t" type="tel" placeholder="Su celular de emergencia" autocomplete="off" required>
+      <label class="chk"><input id="a-l" type="checkbox"> Que sea el encargado del parche</label>
+      <button class="cta">Agregar</button>
+    </form>
+  </details>
+
+  <details>
+    <summary>🚑 Guía rápida: si alguien se pasó de tragos</summary>
+    <div class="dbody">
+      <div class="tl tg">
+        <h3>Está tomado pero consciente</h3>
+        <ul>
+          <li>Se acabaron los tragos. Ni un shot más, ni “uno para bajar”.</li>
+          <li>Agua en sorbos y algo de comer si puede.</li>
+          <li>No se queda solo ni un minuto: ni en el baño ni afuera. Si va a vomitar, alguien lo acompaña.</li>
+          <li>El café y la ducha fría no sirven: no bajan la borrachera, solo la tapan. Lo único que la baja es el tiempo.</li>
+          <li>No maneja ni se sube a un carro o moto con alguien que tomó. Se va en taxi o app y alguien del parche lo deja en la puerta.</li>
+        </ul>
+      </div>
+      <div class="tl ty">
+        <h3>Está muy mal (vomita, no coordina, se desploma)</h3>
+        <ul>
+          <li>Siéntenlo o acuéstenlo de lado, nunca boca arriba.</li>
+          <li>Una persona se queda pegada a él hasta que esté bien. Nadie lo deja “durmiendo la mona” solo.</li>
+          <li>Revisen que respire normal y que despierte si lo sacuden. Cada pocos minutos.</li>
+          <li>Si empeora, pasa a rojo: llamen sin pensarlo.</li>
+        </ul>
+      </div>
+      <div class="tl tr">
+        <h3>Llamen al 123 ya si…</h3>
+        <ul>
+          <li>No despierta aunque lo sacudan fuerte o le hablen duro.</li>
+          <li>Respira muy lento, con pausas largas o hace ruidos raros al respirar.</li>
+          <li>Tiene la piel fría, pálida, o los labios morados.</li>
+          <li>Vomita estando inconsciente o medio dormido, o convulsiona.</li>
+          <li>Se golpeó la cabeza.</li>
+          <li>Mezcló el alcohol con pastillas o drogas.</li>
+        </ul>
+        <p><b>Mientras llega la ayuda:</b> acuéstenlo de lado, con la cabeza ladeada y la rodilla de arriba doblada para que no se ahogue con su propio vómito. No lo hagan vomitar, no le den más alcohol, café ni pastillas. Cuéntenle a los paramédicos qué y cuánto tomó.</p>
+        <p>Que no les dé pena ni miedo llamar. Llamar a tiempo salva vidas.</p>
+      </div>
+    </div>
+  </details>
+</section>
+</main>
+<div id="toast" class="toast hidden" role="status"></div>
+
+<script>
+var KEY="frecuencia_par_v2",mem={},cur=null,tt;
+var NAMES=["Los Imparables","Noche Par","Los de Siempre","Parche Fantasma","Equipo Sin Resaca","Los Intocables","La Banda del Viernes","Cero Abandono"];
+function $(i){return document.getElementById(i)}
+function db(){try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}return mem}
+function save(d){mem=d;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+function mkcode(d){var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",k;do{k="FP";for(var i=0;i<3;i++)k+=c[Math.floor(Math.random()*c.length)]}while(d[k]);return k}
+function toast(t){var e=$("toast");e.textContent=t;e.classList.remove("hidden");clearTimeout(tt);tt=setTimeout(function(){e.classList.add("hidden")},2600)}
+function ago(ts){var m=Math.floor((Date.now()-ts)/60000);return m<1?"ahora mismo":m<60?"hace "+m+" min":"hace "+Math.floor(m/60)+" h"}
+
+function tab(crear){$("f-crear").classList.toggle("hidden",!crear);$("f-entrar").classList.toggle("hidden",crear);$("herr").classList.add("hidden");if(!crear)recent()}
+$("b-code").onclick=function(){tab(false)};$("b-new").onclick=function(){tab(true)};
+function recent(){var d=db(),k=Object.keys(d);$("recent").innerHTML=k.length?'<div class="chips">'+k.map(function(c){return '<button type="button" class="chip" data-c="'+c+'">'+esc(d[c].nom)+' · '+c+'</button>'}).join("")+'</div>':""}
+$("recent").onclick=function(e){var c=e.target.getAttribute("data-c");if(c)openG(c)};
+
+function openG(code){
+  code=String(code||"").trim().toUpperCase();var d=db();
+  if(!d[code]){var e=$("herr");e.textContent="No encontramos el código “"+code+"”. Revisa las letras o crea un parche nuevo.";e.classList.remove("hidden");return}
+  cur=code;$("home").classList.add("hidden");$("group").classList.remove("hidden");draw();window.scrollTo(0,0)}
+function exit(){cur=null;$("group").classList.add("hidden");$("home").classList.remove("hidden");tab(true)}
+$("b-exit").onclick=exit;
+
+$("f-crear").onsubmit=function(e){e.preventDefault();var d=db(),c=mkcode(d),n=$("nom").value.trim();
+  d[c]={c:c,nom:rnd(NAMES),yo:n,m:[{n:n,t:$("tel").value.trim(),lead:true,st:"ok",ck:Date.now()}]};save(d);e.target.reset();openG(c)};
+$("f-entrar").onsubmit=function(e){e.preventDefault();openG($("cod").value)};
+
+function me(g){return g.m.filter(function(m){return m.n===g.yo})[0]||g.m[0]}
+
+function draw(){
+  var d=db(),g=d[cur];if(!g)return exit();
+  var yo=me(g);
+  $("g-nom").textContent=g.nom;$("g-cod").textContent=g.c;
+  $("g-wa").href="https://wa.me/?text="+encodeURIComponent("Entra a mi parche en Frecuencia Par 🛡️ Código: "+g.c+"\nTu parche, tu escudo. "+location.href.split("#")[0]);
+
+  var home=g.m.filter(function(m){return m.st==="home"}).length,help=g.m.filter(function(m){return m.st==="help"}).length,p=g.m.length?home/g.m.length:0;
+  $("s-n").textContent=home+" de "+g.m.length+" en casa";
+  $("s-t").textContent=home===g.m.length?"Todos a salvo. Misión cumplida.":help?"Alguien necesita apoyo.":"Nadie se queda atrás.";
+  $("sr").setAttribute("y",120-120*p);$("sr").setAttribute("height",120*p);
+
+  $("alerts").innerHTML=g.m.filter(function(m){return m.st==="help"}).map(function(m){
+    var gps=typeof m.lat==="number"?'<a href="https://www.google.com/maps?q='+m.lat+','+m.lng+'" target="_blank" rel="noopener">📍 Ver mapa</a>':"";
+    return '<div class="err">🚨 '+esc(m.n)+' necesita apoyo <a href="tel:'+esc(m.t)+'">📞 Llamar</a>'+gps+'</div>'}).join("");
+
+  $("p-t").textContent=yo.st==="home"?"Ya estoy en casa ✓":"Llegué a casa";
+  $("p-sub").textContent=yo.st==="home"?"toca si sigues en la calle":"avísale al parche";
+  $("b-help").textContent=yo.st==="help"?"✅ Ya estoy bien":"🆘 Necesito apoyo";
+
+  $("g-count").textContent="El parche ("+g.m.length+")";
+  var sel=$("yo");sel.innerHTML=g.m.map(function(m){return '<option'+(m.n===g.yo?' selected':'')+'>'+esc(m.n)+'</option>'}).join("");
+  $("who").classList.toggle("hidden",g.m.length<2);
+  $("list").innerHTML=g.m.map(function(m){
+    var lab=m.st==="help"?"Necesita apoyo":m.st==="home"?"Ya llegó a casa 🏠":"En el parche";
+    var gps=typeof m.lat==="number"?'<a href="https://www.google.com/maps?q='+m.lat+','+m.lng+'" target="_blank" rel="noopener" aria-label="Ver ubicación de '+esc(m.n)+'">📍</a>':"";
+    return '<div class="m '+(m.st==="help"?"bad":m.st==="home"?"good":"")+'"><div class="av">'+esc(m.n.charAt(0).toUpperCase())+'</div><div class="i"><b>'+esc(m.n)+(m.lead?" 🛡️":"")+'</b><span>'+lab+' · '+ago(m.ck)+'</span></div><div class="ic">'+gps+'<a href="tel:'+esc(m.t)+'" aria-label="Llamar a '+esc(m.n)+'">📞</a></div></div>'}).join("");
+}
+$("yo").onchange=function(){var d=db();d[cur].yo=this.value;save(d);draw()};
+$("g-cod").onclick=function(){try{navigator.clipboard.writeText(cur)}catch(e){}toast("Código "+cur+" copiado")};
+$("g-dice").onclick=function(){var d=db();d[cur].nom=rnd(NAMES);save(d);draw()};
+
+function setSt(st,msg){var d=db(),p=me(d[cur]);p.st=st;p.ck=Date.now();save(d);draw();toast(msg)}
+$("b-ping").onclick=function(){
+  var b=$("big");b.classList.add("ping");setTimeout(function(){b.classList.remove("ping")},900);
+  if(me(db()[cur]).st==="home")setSt("ok","Sigues en el parche");else setSt("home","🏠 Avisamos que llegaste a casa")};
+$("b-help").onclick=function(){
+  if(me(db()[cur]).st==="help")setSt("ok","Qué bueno que estás bien");else setSt("help","Avisamos al parche que necesitas apoyo")};
+$("b-gps").onclick=function(){
+  var i=$("gps-i");if(!navigator.geolocation){i.textContent="Tu navegador no permite compartir ubicación.";return}
+  i.textContent="Buscando señal GPS…";
+  navigator.geolocation.getCurrentPosition(function(pos){var d=db(),p=me(d[cur]);p.lat=pos.coords.latitude;p.lng=pos.coords.longitude;p.ck=Date.now();save(d);i.textContent="Ubicación enviada.";draw()},
+  function(er){i.textContent="No se pudo activar el GPS: "+er.message},{enableHighAccuracy:true,timeout:10000})};
+
+$("f-add").onsubmit=function(e){e.preventDefault();var d=db(),g=d[cur],n=$("a-n").value.trim(),l=$("a-l").checked;
+  if(l){g.m.forEach(function(m){m.lead=false})}
+  g.m.push({n:n,t:$("a-t").value.trim(),lead:l,st:"ok",ck:Date.now()});save(d);e.target.reset();draw();toast(n+" entró al parche")};
+
+setInterval(function(){if(cur)draw()},30000);
+recent();
+</script>
+</body>
+</html>
