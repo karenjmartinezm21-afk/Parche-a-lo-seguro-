@@ -1,809 +1,245 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frecuencia Par — Conecta tu parche</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #081214;
-      --card: #0e1d21;
-      --card-2: #13282e;
-      --border: rgba(25, 195, 125, 0.18);
-      --text: #f3fbf9;
-      --muted: #93b3b5;
-      --emerald: #00b36b;
-      --teal: #007978;
-      --blue: #0d5c8a;
-      --grad: linear-gradient(135deg, #00b36b 0%, #007978 52%, #0d5c8a 100%);
-      --danger: #ff4d6d;
-      --warn: #ffb703;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-      background:
-        radial-gradient(circle at 15% 0%, rgba(0, 179, 107, 0.22), transparent 42%),
-        radial-gradient(circle at 85% 10%, rgba(13, 92, 138, 0.26), transparent 45%),
-        var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 18px 14px 56px;
-    }
-
-    .app {
-      max-width: 540px;
-      margin: 0 auto;
-    }
-
-    .hidden { display: none !important; }
-
-    /* Cabecera estilo señal / radar */
-    .brand-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .brand-id {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .signal-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      background: var(--grad);
-      display: grid;
-      place-items: center;
-      box-shadow: 0 8px 24px rgba(0, 179, 107, 0.28);
-      flex-shrink: 0;
-    }
-
-    .brand-title {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 0;
-      line-height: 1.1;
-    }
-
-    .brand-sub {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .live-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 11px;
-      border-radius: 999px;
-      font-size: 0.74rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      background: rgba(0, 179, 107, 0.14);
-      border: 1px solid rgba(0, 179, 107, 0.35);
-      color: #4ade80;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #4ade80;
-      box-shadow: 0 0 10px #4ade80;
-      animation: pulse 1.6s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.8); }
-    }
-
-    /* Hero compacto y directo */
-    .hero-card {
-      background: linear-gradient(160deg, rgba(19, 40, 46, 0.96), rgba(14, 29, 33, 0.96));
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 22px 20px;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card h1 {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.72rem;
-      line-height: 1.12;
-      margin: 0 0 8px;
-    }
-
-    .hero-card h1 span {
-      background: linear-gradient(90deg, #34d399, #38bdf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-
-    /* Tabs de entrada */
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 6px;
-      border-radius: 16px;
-      margin-bottom: 14px;
-    }
-
-    .tab-btn {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.88rem;
-      padding: 10px 12px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .tab-btn.active {
-      background: var(--grad);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(0, 121, 120, 0.35);
-    }
-
-    .box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 20px;
-      margin-bottom: 14px;
-    }
-
-    .box h2 {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.15rem;
-      margin: 0 0 4px;
-    }
-
-    .box-desc {
-      font-size: 0.84rem;
-      color: var(--muted);
-      margin: 0 0 14px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #cbe3e4;
-      margin-top: 12px;
-    }
-
-    input {
-      width: 100%;
-      margin-top: 6px;
-      padding: 13px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(147, 179, 181, 0.22);
-      background: #081316;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.96rem;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--emerald);
-      box-shadow: 0 0 0 3px rgba(0, 179, 107, 0.16);
-    }
-
-    .btn-main {
-      width: 100%;
-      margin-top: 16px;
-      padding: 14px 18px;
-      border: none;
-      border-radius: 14px;
-      background: var(--grad);
-      color: #fff;
-      font-family: "Space Grotesk", sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 8px 22px rgba(0, 179, 107, 0.24);
-      transition: transform 0.12s ease, filter 0.15s ease;
-    }
-
-    .btn-main:active { transform: scale(0.98); }
-    .btn-main:hover { filter: brightness(1.07); }
-
-    .btn-soft {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px 13px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--card-2);
-      color: var(--text);
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.83rem;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .btn-sos {
-      background: var(--danger);
-      border-color: transparent;
-      color: #fff;
-    }
-
-    .alert {
-      padding: 11px 14px;
-      border-radius: 12px;
-      font-size: 0.86rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .alert-err {
-      background: rgba(255, 77, 109, 0.15);
-      border: 1px solid rgba(255, 77, 109, 0.4);
-      color: #ffc2cd;
-    }
-
-    .alert-ok {
-      background: rgba(0, 179, 107, 0.16);
-      border: 1px solid rgba(0, 179, 107, 0.4);
-      color: #86efac;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .chip {
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--card-2);
-      color: var(--text);
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    /* Vista dentro del parche */
-    .freq-header {
-      background: var(--grad);
-      border-radius: 22px;
-      padding: 18px 20px;
-      margin-bottom: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .freq-code {
-      display: inline-block;
-      margin-top: 4px;
-      background: rgba(8, 18, 20, 0.42);
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-family: ui-monospace, SFMono-Regular, monospace;
-      font-size: 0.86rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-    }
-
-    .quick-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .member-item {
-      background: var(--card-2);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-
-    .member-item.warn-state {
-      border-color: rgba(255, 183, 3, 0.65);
-      background: linear-gradient(145deg, rgba(255, 183, 3, 0.12), var(--card-2));
-    }
-
-    .member-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .badge {
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 4px 9px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .badge-lead {
-      background: rgba(13, 92, 138, 0.45);
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      color: #7dd3fc;
-    }
-
-    .badge-ok {
-      background: rgba(0, 179, 107, 0.18);
-      color: #4ade80;
-    }
-
-    .badge-warn {
-      background: rgba(255, 183, 3, 0.22);
-      color: #ffd166;
-    }
-
-    .member-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-      font-size: 0.82rem;
-    }
-
-    .tips-box {
-      border-left: 3px solid var(--emerald);
-      padding-left: 12px;
-      margin-top: 10px;
-      font-size: 0.86rem;
-      color: #d5ecec;
-      display: grid;
-      gap: 8px;
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      margin-top: 12px;
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .checkbox-row input {
-      width: 17px;
-      height: 17px;
-      margin: 0;
-      accent-color: var(--emerald);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frecuencia Par — tu parche, tu escudo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Figtree:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#071336;--ink2:#0b2a66;--card:rgba(255,255,255,.08);--line:rgba(255,255,255,.16);--txt:#f4f8ff;--mut:#a9bbe0;--lime:#35e85a;--cyan:#00c2ff;--coral:#ff4d6a;--amber:#ffc14d;--grad:linear-gradient(120deg,#35e85a,#00c2ff);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Figtree,system-ui,sans-serif;color:var(--txt);background:radial-gradient(120% 60% at 50% -10%,#0d4fb0 0%,transparent 60%),radial-gradient(70% 40% at 100% 100%,rgba(53,232,90,.22),transparent 70%),var(--ink);background-attachment:fixed;padding:18px 16px 60px;overflow-x:hidden}
+.app{max-width:480px;margin:0 auto}
+.hidden{display:none!important}
+h1,h2,.u{font-family:Unbounded,Figtree,sans-serif}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+/* HOME */
+.stage{position:relative;height:290px;display:grid;place-items:center;margin-top:6px}
+.ring{position:absolute;width:190px;height:190px;border-radius:50%;border:2px solid var(--cyan);opacity:0;animation:rg 3.6s ease-out infinite}
+.ring:nth-child(2){animation-delay:1.2s;border-color:var(--lime)}
+.ring:nth-child(3){animation-delay:2.4s}
+@keyframes rg{0%{transform:scale(.7);opacity:.9}100%{transform:scale(2);opacity:0}}
+.badge{position:relative;width:178px;background:#fff;border-radius:38px;padding:10px;box-shadow:0 0 0 6px rgba(255,255,255,.12),0 24px 60px rgba(0,194,255,.35)}
+.badge img{display:block;width:100%;height:auto;border-radius:28px}
+.slogan{font-size:2.15rem;line-height:1.08;font-weight:800;text-align:center;margin:8px 0 10px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{text-align:center;color:var(--mut);margin:0 0 20px;font-weight:500}
+.card{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:18px;backdrop-filter:blur(10px);margin-bottom:14px}
+input{width:100%;padding:16px 16px;margin-bottom:10px;border-radius:16px;border:1.5px solid var(--line);background:rgba(7,19,54,.7);font-size:1.02rem;font-weight:600}
+input::placeholder{color:#7f93bf;font-weight:500}
+input:focus{border-color:var(--lime);outline:none;box-shadow:0 0 0 4px rgba(53,232,90,.18)}
+.cta{width:100%;border:0;border-radius:18px;padding:17px;font-family:Unbounded,sans-serif;font-weight:800;font-size:1rem;color:#05153a;background:var(--grad);box-shadow:0 10px 30px rgba(0,194,255,.35);cursor:pointer}
+.cta:active{transform:scale(.98)}
+.alt{text-align:center;margin-top:14px;color:var(--mut);font-size:.92rem}
+.link{background:none;border:0;color:var(--cyan);font-weight:800;cursor:pointer;text-decoration:underline;padding:4px}
+.err{background:rgba(255,77,106,.18);border:1px solid var(--coral);color:#ffd0d8;border-radius:14px;padding:11px 14px;margin-bottom:12px;font-weight:700;font-size:.9rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:999px;padding:9px 13px;font-weight:700;font-size:.84rem;cursor:pointer}
+/* GRUPO */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.top h2{margin:0;font-size:1.15rem;line-height:1.2}
+.mini{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.1);border-radius:999px;padding:6px 11px;font-weight:800;font-size:.82rem;cursor:pointer;text-decoration:none;color:var(--txt);display:inline-flex;gap:6px;align-items:center}
+.wa{background:#25d366;border-color:transparent;color:#04230f}
+.shield{display:flex;gap:14px;align-items:center}
+.shield svg{width:72px;height:86px;flex-shrink:0;filter:drop-shadow(0 6px 18px rgba(0,194,255,.45))}
+.shield b{font-family:Unbounded,sans-serif;font-size:1.5rem;display:block;line-height:1.1}
+.shield span{color:var(--mut);font-size:.88rem;font-weight:500}
+.big{position:relative;display:grid;place-items:center;height:250px}
+.pulse{position:relative;width:170px;height:170px;border-radius:50%;border:0;cursor:pointer;background:var(--grad);color:#05153a;font-family:Unbounded,sans-serif;font-weight:800;font-size:.95rem;line-height:1.2;box-shadow:0 0 0 10px rgba(0,194,255,.14),0 18px 50px rgba(53,232,90,.4);z-index:2;padding:10px}
+.pulse small{display:block;font-family:Figtree,sans-serif;font-weight:700;font-size:.74rem;margin-top:4px;opacity:.75}
+.pulse:active{transform:scale(.96)}
+.big .ring{width:170px;height:170px;animation-duration:3s}
+.big.ping .ring{animation-duration:.9s;opacity:1}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.1);border-radius:16px;padding:14px 10px;font-weight:800;font-size:.9rem;cursor:pointer;text-align:center;text-decoration:none;color:var(--txt)}
+.btn.help{background:rgba(255,193,77,.18);border-color:var(--amber);color:#ffe2a6}
+.btn.sos{background:var(--coral);border-color:transparent;color:#fff}
+.m{display:flex;gap:12px;align-items:center;padding:12px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--line);margin-bottom:9px}
+.m.bad{border-color:var(--coral);background:rgba(255,77,106,.14)}
+.m.lost{border-color:var(--amber);background:rgba(255,193,77,.1)}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:Unbounded,sans-serif;font-weight:800;color:#05153a;background:var(--grad);flex-shrink:0}
+.m .i{flex:1;min-width:0}
+.m .i b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m .i span{font-size:.8rem;color:var(--mut);font-weight:600}
+.m .ic{display:flex;gap:6px}
+.ic a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);text-decoration:none;font-size:1.05rem}
+details{margin-bottom:14px}
+summary{cursor:pointer;font-weight:800;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:18px;list-style:none}
+summary::-webkit-details-marker{display:none}
+details[open] summary{border-radius:18px 18px 0 0}
+.dbody{padding:14px 16px;border:1px solid var(--line);border-top:0;border-radius:0 0 18px 18px;background:rgba(255,255,255,.04)}
+.tips{display:grid;gap:9px;font-size:.92rem;line-height:1.4}
+.chk{display:flex;gap:9px;align-items:center;color:var(--mut);font-size:.88rem;margin:2px 0 12px}
+.chk input{width:18px;height:18px;margin:0;accent-color:var(--lime)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#fff;color:#05153a;font-weight:800;padding:12px 18px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:9;max-width:92vw;text-align:center}
+select{background:rgba(7,19,54,.8);border:1px solid var(--line);border-radius:12px;padding:7px 10px;font-weight:700}
+@media(prefers-reduced-motion:reduce){.ring{animation:none;opacity:.35}}
+</style>
 </head>
 <body>
-  <main class="app">
-    <!-- Barra superior -->
-    <div class="brand-bar">
-      <div class="brand-id">
-        <div class="signal-icon" aria-hidden="true">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-            <path d="M5 17C5 11.477 9.477 7 15 7" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
-            <path d="M9 17C9 13.686 11.686 11 15 11" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
-            <circle cx="15" cy="17" r="2.2" fill="white"/>
-          </svg>
-        </div>
-        <div>
-          <p class="brand-title">Frecuencia Par</p>
-          <div class="brand-sub">Sintoniza tu parche antes de brindar</div>
-        </div>
+<main class="app">
+
+<section id="home">
+  <div class="stage"><i class="ring"></i><i class="ring"></i><i class="ring"></i>
+    <div class="badge"><img src="logo.jpg" alt="Logo de Frecuencia Par"></div>
+  </div>
+  <h1 class="slogan">Tu parche,<br>tu escudo.</h1>
+  <p class="lead">Actívalo en 10 segundos, antes del primer trago.</p>
+  <div id="herr" class="err hidden"></div>
+
+  <form id="f-crear" class="card">
+    <input id="nom" placeholder="Tu apodo" maxlength="20" autocomplete="off" required>
+    <input id="tel" type="tel" placeholder="Celular de alguien de confianza" autocomplete="off" required>
+    <button class="cta">Activar mi escudo</button>
+    <div class="alt">¿Ya tienen código? <button type="button" class="link" id="b-code">Entrar</button></div>
+  </form>
+
+  <form id="f-entrar" class="card hidden">
+    <input id="cod" placeholder="Código, ej: FP84K" maxlength="5" autocomplete="off" style="text-transform:uppercase" required>
+    <button class="cta">Entrar al parche</button>
+    <div id="recent"></div>
+    <div class="alt"><button type="button" class="link" id="b-new">Crear un parche nuevo</button></div>
+  </form>
+</section>
+
+<section id="group" class="hidden">
+  <div class="top">
+    <div>
+      <h2 id="g-nom">Parche</h2>
+      <div class="mini">
+        <button class="pill" id="g-cod" type="button" title="Copiar código">FP000</button>
+        <a class="pill wa" id="g-wa" target="_blank" rel="noopener">Invitar por WhatsApp</a>
+        <button class="pill" id="g-dice" type="button" aria-label="Cambiar nombre del parche">🎲</button>
       </div>
-      <span class="live-pill"><span class="dot"></span> En parche</span>
     </div>
+    <button class="pill" type="button" id="b-exit">Salir</button>
+  </div>
 
-    <!-- PANTALLA 1: INICIO RÁPIDO -->
-    <section id="screen-home">
-      <div class="hero-card">
-        <h1>Salen juntos, <span>vuelven todos.</span></h1>
-        <p>
-          10 segundos antes del primer trago: arman su frecuencia, eligen quién lleva la batuta del grupo y dejan un contacto por si alguien se pasa.
-        </p>
-      </div>
+  <div class="card shield">
+    <svg viewBox="0 0 100 120" aria-hidden="true">
+      <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#35e85a"/><stop offset="1" stop-color="#00c2ff"/></linearGradient>
+      <clipPath id="sc"><rect id="sr" x="0" y="120" width="100" height="0"/></clipPath></defs>
+      <path id="sp" d="M50 6 L92 22 V58 C92 88 70 108 50 116 C30 108 8 88 8 58 V22 Z" fill="url(#gg)" clip-path="url(#sc)"/>
+      <path d="M50 6 L92 22 V58 C92 88 70 108 50 116 C30 108 8 88 8 58 V22 Z" fill="none" stroke="url(#gg)" stroke-width="5" stroke-linejoin="round"/>
+    </svg>
+    <div><b id="s-n">0 de 0</b><span id="s-t">en frecuencia</span></div>
+  </div>
 
-      <div id="home-error" class="alert alert-err hidden"></div>
+  <div id="big" class="big"><i class="ring"></i><i class="ring"></i><i class="ring"></i>
+    <button id="b-ping" class="pulse" type="button">Estoy en frecuencia<small id="p-sub">toca cada 30 min</small></button>
+  </div>
 
-      <div class="tabs">
-        <button type="button" id="tab-crear" class="tab-btn active" onclick="cambiarTab('crear')">Crear frecuencia</button>
-        <button type="button" id="tab-entrar" class="tab-btn" onclick="cambiarTab('entrar')">Ya tengo código</button>
-      </div>
+  <div class="row">
+    <button class="btn" id="b-gps" type="button">📍 Mi ubicación</button>
+    <button class="btn help" id="b-help" type="button">🆘 Necesito apoyo</button>
+  </div>
+  <div class="row">
+    <a class="btn sos" href="tel:123">🚨 Llamar al 123</a>
+    <a class="btn" href="https://www.google.com/maps/search/urgencias+hospital+cerca" target="_blank" rel="noopener">🏥 Urgencias cerca</a>
+  </div>
+  <p id="gps-i" style="color:var(--mut);font-size:.82rem;margin:0 0 16px;text-align:center"></p>
 
-      <!-- Crear parche -->
-      <div id="panel-crear" class="box">
-        <h2>Arma la frecuencia del parche</h2>
-        <p class="box-desc">Tú quedas como encargado/a inicial de cuidar que nadie se pierda.</p>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h2 style="margin:0;font-size:1rem" id="g-count">El parche</h2>
+      <label id="who" style="font-size:.82rem;color:var(--mut);display:flex;gap:6px;align-items:center">Eres <select id="yo"></select></label>
+    </div>
+    <div id="list"></div>
+  </div>
 
-        <form id="form-crear">
-          <label for="parche-nombre">¿Cómo se llama el parche hoy?</label>
-          <input id="parche-nombre" placeholder="Ej: Viernes de polas · Los de siempre" required />
+  <details>
+    <summary>＋ Sumar a alguien del parche</summary>
+    <form id="f-add" class="dbody">
+      <input id="a-n" placeholder="Apodo" maxlength="20" autocomplete="off" required>
+      <input id="a-t" type="tel" placeholder="Su celular de emergencia" autocomplete="off" required>
+      <label class="chk"><input id="a-l" type="checkbox"> Que sea el encargado del parche</label>
+      <button class="cta">Agregar</button>
+    </form>
+  </details>
 
-          <label for="encargado-nombre">Tu nombre o apodo</label>
-          <input id="encargado-nombre" placeholder="Ej: Vale / Sebas" required />
+  <details>
+    <summary>Si alguien se pasa de tragos</summary>
+    <div class="dbody tips">
+      <div><b>No lo dejen solo.</b> Ni en el baño, ni afuera, ni en un carro con desconocidos.</div>
+      <div><b>Agua y aire.</b> Frenen los tragos y sáquenlo a un sitio ventilado.</div>
+      <div><b>Si vomita o se duerme,</b> acuéstenlo de lado, nunca boca arriba.</div>
+      <div><b>Si no reacciona,</b> respira muy lento o se golpeó la cabeza: llamen al 123 ya.</div>
+    </div>
+  </details>
+</section>
+</main>
+<div id="toast" class="toast hidden" role="status"></div>
 
-          <label for="encargado-tel">Número de emergencia (de alguien de confianza)</label>
-          <input id="encargado-tel" type="tel" placeholder="Ej: 300 123 4567" required />
+<script>
+var KEY="frecuencia_par_v2",MIN=30*60000,mem={},cur=null,tt;
+var NAMES=["Los Imparables","Noche Par","Los de Siempre","Parche Fantasma","Equipo Sin Resaca","Los Intocables","La Banda del Viernes","Cero Abandono"];
+function $(i){return document.getElementById(i)}
+function db(){try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}return mem}
+function save(d){mem=d;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+function mkcode(d){var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",k;do{k="FP";for(var i=0;i<3;i++)k+=c[Math.floor(Math.random()*c.length)]}while(d[k]);return k}
+function toast(t){var e=$("toast");e.textContent=t;e.classList.remove("hidden");clearTimeout(tt);tt=setTimeout(function(){e.classList.add("hidden")},2400)}
+function ago(ts){var m=Math.floor((Date.now()-ts)/60000);return m<1?"ahora mismo":m<60?"hace "+m+" min":"hace "+Math.floor(m/60)+" h"}
+function state(m){return m.st==="help"?"help":(Date.now()-m.ck>MIN?"lost":"ok")}
 
-          <button type="submit" class="btn-main">Activar Frecuencia Par</button>
-        </form>
-      </div>
+function tab(crear){$("f-crear").classList.toggle("hidden",!crear);$("f-entrar").classList.toggle("hidden",crear);$("herr").classList.add("hidden");if(!crear)recent()}
+$("b-code").onclick=function(){tab(false)};$("b-new").onclick=function(){tab(true)};
+function recent(){var d=db(),k=Object.keys(d);$("recent").innerHTML=k.length?'<div class="chips">'+k.map(function(c){return '<button type="button" class="chip" data-c="'+c+'">'+esc(d[c].nom)+' · '+c+'</button>'}).join("")+'</div>':""}
+$("recent").onclick=function(e){var c=e.target.getAttribute("data-c");if(c)openG(c)};
 
-      <!-- Entrar a parche existente -->
-      <div id="panel-entrar" class="box hidden">
-        <h2>Sintonizar parche existente</h2>
-        <p class="box-desc">Escribe el código de 5 letras/números de tu grupo.</p>
+function openG(code){
+  code=String(code||"").trim().toUpperCase();var d=db();
+  if(!d[code]){var e=$("herr");e.textContent="No encontramos el código “"+code+"”. Revisa las letras o crea un parche nuevo.";e.classList.remove("hidden");return}
+  cur=code;$("home").classList.add("hidden");$("group").classList.remove("hidden");draw();window.scrollTo(0,0)}
+function exit(){cur=null;$("group").classList.add("hidden");$("home").classList.remove("hidden");tab(true)}
+$("b-exit").onclick=exit;
 
-        <form id="form-buscar">
-          <label for="codigo-input">Código de frecuencia</label>
-          <input id="codigo-input" placeholder="Ej: FP84K" style="text-transform:uppercase;" required />
-          <button type="submit" class="btn-main">Entrar al parche</button>
-        </form>
+$("f-crear").onsubmit=function(e){e.preventDefault();var d=db(),c=mkcode(d),n=$("nom").value.trim();
+  d[c]={c:c,nom:rnd(NAMES),yo:n,m:[{n:n,t:$("tel").value.trim(),lead:true,st:"ok",ck:Date.now()}]};save(d);e.target.reset();openG(c)};
+$("f-entrar").onsubmit=function(e){e.preventDefault();openG($("cod").value)};
 
-        <div id="lista-guardados"></div>
-      </div>
-    </section>
+function me(g){return g.m.filter(function(m){return m.n===g.yo})[0]||g.m[0]}
 
-    <!-- PANTALLA 2: DENTRO DEL PARCHE -->
-    <section id="screen-group" class="hidden">
-      <div class="freq-header">
-        <div>
-          <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; opacity:0.9;">
-            Frecuencia activa
-          </div>
-          <h1 id="g-nombre" style="font-family:'Space Grotesk',sans-serif; font-size:1.45rem; margin:2px 0;">Parche</h1>
-          <div style="font-size:0.84rem;">
-            Encargado/a: <strong id="g-encargado">—</strong> · <span id="g-codigo" class="freq-code">FP000</span>
-          </div>
-        </div>
-        <button type="button" class="btn-soft" style="background:rgba(8,18,20,0.38); color:#fff; border-color:rgba(255,255,255,0.2);" onclick="salirGrupo()">Salir</button>
-      </div>
+function draw(){
+  var d=db(),g=d[cur];if(!g)return exit();
+  $("g-nom").textContent=g.nom;$("g-cod").textContent=g.c;
+  $("g-wa").href="https://wa.me/?text="+encodeURIComponent("Entra a mi parche en Frecuencia Par 🛡️ Código: "+g.c+"\nTu parche, tu escudo. "+location.href.split("#")[0]);
+  var ok=g.m.filter(function(m){return state(m)==="ok"}).length,p=g.m.length?ok/g.m.length:0;
+  $("s-n").textContent=ok+" de "+g.m.length;
+  $("s-t").textContent=ok===g.m.length?"Escudo completo. Todos en frecuencia.":"en frecuencia. Revisen quién falta.";
+  $("sr").setAttribute("y",120-120*p);$("sr").setAttribute("height",120*p);
+  $("g-count").textContent="El parche ("+g.m.length+")";
+  var sel=$("yo");sel.innerHTML=g.m.map(function(m){return '<option'+(m.n===g.yo?' selected':'')+'>'+esc(m.n)+'</option>'}).join("");
+  $("who").classList.toggle("hidden",g.m.length<2);
+  $("list").innerHTML=g.m.map(function(m){
+    var s=state(m),lab=s==="help"?"Necesita apoyo":s==="lost"?"Sin señal":"En frecuencia";
+    var gps=typeof m.lat==="number"?'<a href="https://www.google.com/maps?q='+m.lat+','+m.lng+'" target="_blank" rel="noopener" aria-label="Ver ubicación de '+esc(m.n)+'">📍</a>':"";
+    return '<div class="m '+(s==="help"?"bad":s==="lost"?"lost":"")+'"><div class="av">'+esc(m.n.charAt(0).toUpperCase())+'</div><div class="i"><b>'+esc(m.n)+(m.lead?" 🛡️":"")+'</b><span>'+lab+' · '+ago(m.ck)+'</span></div><div class="ic">'+gps+'<a href="tel:'+esc(m.t)+'" aria-label="Llamar a '+esc(m.n)+'">📞</a></div></div>'}).join("");
+}
+$("yo").onchange=function(){var d=db();d[cur].yo=this.value;save(d);draw()};
+$("g-cod").onclick=function(){try{navigator.clipboard.writeText(cur)}catch(e){}toast("Código "+cur+" copiado")};
+$("g-dice").onclick=function(){var d=db();d[cur].nom=rnd(NAMES);save(d);draw()};
 
-      <div id="g-msg" class="alert alert-ok hidden"></div>
+function setSt(st,msg){var d=db(),g=d[cur],p=me(g);p.st=st;p.ck=Date.now();save(d);draw();toast(msg)}
+$("b-ping").onclick=function(){var b=$("big");b.classList.add("ping");setTimeout(function(){b.classList.remove("ping")},900);setSt("ok","✓ Señal enviada. Sigues en el escudo.")};
+$("b-help").onclick=function(){setSt("help","Avisamos al parche que necesitas apoyo")};
+$("b-gps").onclick=function(){
+  var i=$("gps-i");if(!navigator.geolocation){i.textContent="Tu navegador no permite compartir ubicación.";return}
+  i.textContent="Buscando señal GPS…";
+  navigator.geolocation.getCurrentPosition(function(pos){var d=db(),p=me(d[cur]);p.lat=pos.coords.latitude;p.lng=pos.coords.longitude;p.ck=Date.now();if(p.st!=="help")p.st="ok";save(d);i.textContent="Ubicación enviada.";draw()},
+  function(er){i.textContent="No se pudo activar el GPS: "+er.message},{enableHighAccuracy:true,timeout:10000})};
 
-      <!-- Acciones rápidas de estado y ubicación -->
-      <div class="box">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
-          <h2 style="margin:0;">Tu señal en vivo</h2>
-          <select id="select-yo" style="padding:7px 10px; border-radius:10px; background:#081316; color:#fff; border:1px solid var(--border); font-weight:700;"></select>
-        </div>
+$("f-add").onsubmit=function(e){e.preventDefault();var d=db(),g=d[cur],n=$("a-n").value.trim(),l=$("a-l").checked;
+  if(l){g.m.forEach(function(m){m.lead=false})}
+  g.m.push({n:n,t:$("a-t").value.trim(),lead:l,st:"ok",ck:Date.now()});save(d);e.target.reset();draw();toast(n+" entró al parche")};
 
-        <div class="quick-actions">
-          <button type="button" class="btn-soft" style="background:rgba(0,179,107,0.18); border-color:rgba(0,179,107,0.45);" onclick="enviarUbicacion()">
-            📍 Enviar mi ubicación
-          </button>
-          <button type="button" class="btn-soft" style="background:rgba(255,183,3,0.16); border-color:rgba(255,183,3,0.45); color:#ffd166;" onclick="cambiarEstado('Se pasó de tragos · Cuidar')">
-            🍻 Me pasé / Necesito apoyo
-          </button>
-        </div>
-        <button type="button" class="btn-soft" style="width:100%;" onclick="cambiarEstado('Bien en el parche')">
-          ✅ Estoy bien
-        </button>
-        <p id="gps-info" style="font-size:0.78rem; color:var(--muted); margin:10px 0 0;">
-          Comparte tu punto exacto si te separas del grupo o ya vas camino a casa.
-        </p>
-      </div>
-
-      <!-- Lista del parche -->
-      <div class="box">
-        <h2 id="g-count">El parche (0)</h2>
-        <p class="box-desc">Toca el número de emergencia para llamar directo o abre su última ubicación.</p>
-        <div id="g-miembros"></div>
-      </div>
-
-      <!-- Sumar a otro amigo (solo 2 datos) -->
-      <div class="box">
-        <h2>Sumar a alguien del parche</h2>
-        <p class="box-desc">Solo nombre y un número por si toca avisar.</p>
-
-        <form id="form-miembro">
-          <label for="m-nombre">Nombre o apodo</label>
-          <input id="m-nombre" placeholder="Ej: Cami" required />
-
-          <label for="m-tel">Número de emergencia</label>
-          <input id="m-tel" type="tel" placeholder="Ej: 311 987 6543" required />
-
-          <label class="checkbox-row">
-            <input id="m-es-encargado" type="checkbox" />
-            Pasarle el rol de encargado/a del parche
-          </label>
-
-          <button type="submit" class="btn-main">Agregar al parche</button>
-        </form>
-      </div>
-
-      <!-- Qué hacer si alguien se pasa + Emergencias -->
-      <div class="box">
-        <h2>Si alguien se pasa de tragos</h2>
-        <div class="tips-box">
-          <div><strong>1. Cero abandono:</strong> nadie se queda solo en el baño, afuera del bar ni se va en carro con desconocidos.</div>
-          <div><strong>2. Agua y aire fresco:</strong> frena los tragos, dale agua despacio y llévalo a un sitio ventilado.</div>
-          <div><strong>3. Si se duerme o vomita:</strong> acuéstalo de lado (nunca boca arriba) para que no se ahogue.</div>
-          <div><strong>4. Señal roja:</strong> si no reacciona, respira muy lento o se golpeó la cabeza, llama de una.</div>
-        </div>
-
-        <div class="quick-actions" style="margin-top:14px; margin-bottom:0;">
-          <a class="btn-soft btn-sos" href="tel:123">🚨 Llamar al 123</a>
-          <a class="btn-soft" href="https://www.google.com/maps/search/urgencias+hospital+cerca" target="_blank" rel="noopener">🏥 Urgencias cerca</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script>
-    const DB_KEY = "frecuencia_par_v1";
-    let codigoActual = null;
-
-    function getDB() {
-      try {
-        return JSON.parse(localStorage.getItem(DB_KEY) || "{}");
-      } catch {
-        return {};
-      }
-    }
-
-    function saveDB(db) {
-      localStorage.setItem(DB_KEY, JSON.stringify(db));
-    }
-
-    function crearCodigo(db) {
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      while (true) {
-        let code = "FP";
-        for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
-        if (!db[code]) return code;
-      }
-    }
-
-    function cambiarTab(tab) {
-      const esCrear = tab === "crear";
-      document.getElementById("tab-crear").classList.toggle("active", esCrear);
-      document.getElementById("tab-entrar").classList.toggle("active", !esCrear);
-      document.getElementById("panel-crear").classList.toggle("hidden", !esCrear);
-      document.getElementById("panel-entrar").classList.toggle("hidden", esCrear);
-      document.getElementById("home-error").classList.add("hidden");
-      if (!esCrear) pintarGuardados();
-    }
-
-    function pintarGuardados() {
-      const db = getDB();
-      const codigos = Object.keys(db);
-      const cont = document.getElementById("lista-guardados");
-      if (!codigos.length) {
-        cont.innerHTML = "";
-        return;
-      }
-      cont.innerHTML =
-        `<div style="margin-top:16px; font-size:0.78rem; color:var(--muted); font-weight:700;">Frecuencias recientes:</div>` +
-        `<div class="chips">` +
-        codigos.map(c => `<button type="button" class="chip" onclick="abrirParche('${c}')">${esc(db[c].nombre)} · ${c}</button>`).join("") +
-        `</div>`;
-    }
-
-    function abrirParche(code) {
-      const limpio = String(code || "").trim().toUpperCase();
-      const db = getDB();
-      if (!db[limpio]) {
-        const err = document.getElementById("home-error");
-        err.textContent = `No encontramos el código "${limpio}". Créalo en "Crear frecuencia".`;
-        err.classList.remove("hidden");
-        return;
-      }
-      document.getElementById("home-error").classList.add("hidden");
-      codigoActual = limpio;
-      document.getElementById("screen-home").classList.add("hidden");
-      document.getElementById("screen-group").classList.remove("hidden");
-      document.getElementById("g-msg").classList.add("hidden");
-      pintarParche();
-    }
-
-    function salirGrupo() {
-      codigoActual = null;
-      document.getElementById("screen-group").classList.add("hidden");
-      document.getElementById("screen-home").classList.remove("hidden");
-      pintarGuardados();
-    }
-
-    function avisar(texto) {
-      const box = document.getElementById("g-msg");
-      box.textContent = texto;
-      box.classList.remove("hidden");
-    }
-
-    function pintarParche() {
-      const grupo = getDB()[codigoActual];
-      if (!grupo) return salirGrupo();
-
-      document.getElementById("g-nombre").textContent = grupo.nombre;
-      document.getElementById("g-encargado").textContent = grupo.encargado;
-      document.getElementById("g-codigo").textContent = grupo.codigo;
-      document.getElementById("g-count").textContent = `El parche (${grupo.miembros.length})`;
-
-      const sel = document.getElementById("select-yo");
-      const previo = sel.value;
-      sel.innerHTML = grupo.miembros
-        .map(m => `<option value="${escAttr(m.nombre)}">${esc(m.nombre)}</option>`)
-        .join("");
-      if (previo && grupo.miembros.some(m => m.nombre === previo)) sel.value = previo;
-
-      const lista = document.getElementById("g-miembros");
-      lista.innerHTML = grupo.miembros.map(m => {
-        const mal = /pasó|apoyo|cuidar/i.test(m.estado);
-        const gpsHtml = (typeof m.lat === "number" && typeof m.lng === "number")
-          ? `<a class="btn-soft" style="padding:6px 10px; font-size:0.78rem;" href="https://www.google.com/maps?q=${m.lat},${m.lng}" target="_blank" rel="noopener">📍 Ver mapa</a>`
-          : `<span style="color:var(--muted); font-size:0.78rem;">Sin ubicación aún</span>`;
-
-        return `
-          <div class="member-item ${mal ? "warn-state" : ""}">
-            <div class="member-top">
-              <div>
-                <strong style="font-size:1rem;">${esc(m.nombre)}</strong>
-                ${m.esEncargado ? `<span class="badge badge-lead" style="margin-left:6px;">Encargado/a</span>` : ""}
-              </div>
-              <span class="badge ${mal ? "badge-warn" : "badge-ok"}">${esc(m.estado)}</span>
-            </div>
-            <div class="member-links">
-              <a class="btn-soft" style="padding:6px 10px; font-size:0.78rem;" href="tel:${escAttr(m.tel)}">📞 Emergencia: ${esc(m.tel)}</a>
-              ${gpsHtml}
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function enviarUbicacion() {
-      const nombre = document.getElementById("select-yo").value;
-      const info = document.getElementById("gps-info");
-      if (!navigator.geolocation) {
-        info.textContent = "Tu navegador no permite compartir ubicación.";
-        return;
-      }
-      info.textContent = "Obteniendo señal GPS...";
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const db = getDB();
-          const grupo = db[codigoActual];
-          const persona = grupo?.miembros.find(m => m.nombre === nombre);
-          if (persona) {
-            persona.lat = pos.coords.latitude;
-            persona.lng = pos.coords.longitude;
-            saveDB(db);
-            info.textContent = `Señal actualizada para ${nombre}.`;
-            pintarParche();
-          }
-        },
-        (err) => {
-          info.textContent = "No se pudo activar el GPS: " + err.message;
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    }
-
-    function cambiarEstado(nuevoEstado) {
-      const nombre = document.getElementById("select-yo").value;
-      const db = getDB();
-      const grupo = db[codigoActual];
-      const persona = grupo?.miembros.find(m => m.nombre === nombre);
-      if (persona) {
-        persona.estado = nuevoEstado;
-        saveDB(db);
-        avisar(`${nombre}: ${nuevoEstado}`);
-        pintarParche();
-      }
-    }
-
-    document.getElementById("form-crear").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const nombre = document.getElementById("parche-nombre").value.trim();
-      const encargado = document.getElementById("encargado-nombre").value.trim();
-      const tel = document.getElementById("encargado-tel").value.trim();
-      if (!nombre || !encargado || !tel) return;
-
-      const db = getDB();
-      const codigo = crearCodigo(db);
-      db[codigo] = {
-        codigo,
-        nombre,
-        encargado,
-        miembros: [{
-          nombre: encargado,
-          tel,
-          esEncargado: true,
-          estado: "Bien en el parche",
-          lat: null,
-          lng: null
-        }]
-      };
-      saveDB(db);
-      e.target.reset();
-      abrirParche(codigo);
-    });
-
-    document.getElementById("form-buscar").addEventListener("submit", (e) => {
-      e.preventDefault();
-      abrirParche(document.getElementById("codigo-input").value);
-    });
-
-    document.getElementById("form-miembro").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const nombre = document.getElementById("m-nombre").value.trim();
-      const tel = document.getElementById("m-tel").value.trim();
-      if (!nombre || !tel) return;
-
-      const db = getDB();
-      const grupo = db[codigoActual];
-      if (!grupo) return;
-
-      const esEncargado = document.getElementById("m-es-encargado").checked;
-      if (esEncargado) {
-        grupo.miembros.forEach(m => { m.esEncargado = false; });
-        grupo.encargado = nombre;
-      }
-
-      grupo.miembros.push({
-        nombre,
-        tel,
-        esEncargado,
-        estado: "Bien en el parche",
-        lat: null,
-        lng: null
-      });
-
-      saveDB(db);
-      e.target.reset();
-      avisar(`${nombre} entró a la frecuencia del parche.`);
-      pintarParche();
-    });
-
-    function esc(s) {
-      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-
-    function escAttr(s) {
-      return esc(s).replace(/'/g, "&#39;");
-    }
-
-    pintarGuardados();
-  </script>
+setInterval(function(){if(cur)draw()},30000);
+recent();
+</script>
 </body>
 </html>
